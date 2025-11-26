@@ -6,9 +6,9 @@ import { uploadFolderToDrive } from "./drive.js";
 
 
 
-export async function processChapter(imageUrls) {
+export async function processChapter(imageUrls, chName) {
 
-    const folderPath = await downloadImages(imageUrls);
+    const folderPath = await downloadImages(imageUrls, chName);
 
 
     await mergeImages(folderPath);

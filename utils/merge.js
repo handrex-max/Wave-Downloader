@@ -2,61 +2,82 @@ import sharp from "sharp";
 import fs from "fs";
 import path from "path";
 
+export async function mergeImages(folderPath, maxHeight = 10000) {
 
+    sharp.cache(false);
+    sharp.concurrency(2);
 
-
-
-export async function mergeImages(folderPath, maxHeight = 15000) {
     const files = fs.readdirSync(folderPath)
         .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
-        .sort(); 
+        .sort();
 
-    const mergedFiles = [];
-    let currentBuffers = [];
-    let currentHeight = 0;
-    let width = 0;
-    let fileIndex = 1;
+    const processed = [];
 
+    
     for (const file of files) {
         const filePath = path.join(folderPath, file);
-        const img = sharp(filePath);
-        const meta = await img.metadata();
-        const buffer = await img.toBuffer();
 
+        let img = sharp(filePath, { limitInputPixels: false })
+            .trim() 
+            .jpeg(); 
 
-        if (currentHeight + meta.height > maxHeight) {
+        const buf = await img.toBuffer();
+        const meta = await sharp(buf).metadata();
 
-            const mergedFileName = path.join(folderPath, `merged${String(fileIndex).padStart(3,"0")}.jpg`);
-            await createMergedImage(currentBuffers, width, currentHeight, mergedFileName);
-            mergedFiles.push(mergedFileName);
+        processed.push({ buffer: buf, width: meta.width, height: meta.height });
+    }
 
+    
+    const finalWidth = Math.max(...processed.map(i => i.width));
 
-            currentBuffers = [];
+    
+    const resized = [];
+    for (const item of processed) {
+        const b = await sharp(item.buffer)
+            .resize({ width: finalWidth })
+            .jpeg({ quality: 90 })
+            .toBuffer();
+
+        const meta = await sharp(b).metadata();
+
+        resized.push({ buffer: b, height: meta.height });
+    }
+
+    
+    const mergedFiles = [];
+    let current = [];
+    let currentHeight = 0;
+    let index = 1;
+
+    for (const img of resized) {
+        if (currentHeight + img.height > maxHeight) {
+            const out = path.join(folderPath, `merged${String(index).padStart(3, "0")}.jpg`);
+            await saveMerged(current, finalWidth, currentHeight, out);
+            mergedFiles.push(out);
+
+            current = [];
             currentHeight = 0;
-            fileIndex++;
+            index++;
         }
 
-        currentBuffers.push({ buffer, height: meta.height });
-        currentHeight += meta.height;
-        if (meta.width > width) width = meta.width;
+        current.push(img);
+        currentHeight += img.height;
     }
 
-
-    if (currentBuffers.length > 0) {
-        const mergedFileName = path.join(folderPath, `merged${String(fileIndex).padStart(3,"0")}.jpg`);
-        await createMergedImage(currentBuffers, width, currentHeight, mergedFileName);
-        mergedFiles.push(mergedFileName);
+    if (current.length > 0) {
+        const out = path.join(folderPath, `merged${String(index).padStart(3, "0")}.jpg`);
+        await saveMerged(current, finalWidth, currentHeight, out);
+        mergedFiles.push(out);
     }
 
-
+    
     files.forEach(f => fs.unlinkSync(path.join(folderPath, f)));
 
     return mergedFiles;
 }
 
-
-async function createMergedImage(buffers, width, height, outputFile) {
-    const merged = sharp({
+async function saveMerged(buffers, width, height, out) {
+    const base = sharp({
         create: {
             width,
             height,
@@ -66,11 +87,15 @@ async function createMergedImage(buffers, width, height, outputFile) {
     });
 
     let top = 0;
+
     const composites = buffers.map(b => {
-        const comp = { input: b.buffer, top, left: 0 };
+        const c = { input: b.buffer, top, left: 0 };
         top += b.height;
-        return comp;
+        return c;
     });
 
-    await merged.composite(composites).jpeg({ quality: 90 }).toFile(outputFile);
+    await base
+        .composite(composites)
+        .jpeg({ quality: 90 })
+        .toFile(out);
 }

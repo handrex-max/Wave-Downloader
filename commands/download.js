@@ -25,6 +25,12 @@ export default {
                 .setName("chapter_link")
                 .setDescription("رابط الفصل")
                 .setRequired(true)
+        )
+        .addStringOption(input => 
+            input
+                .setName("chapter_name")
+                .setDescription("اسم للفصل")
+                .setRequired(true)
         ),
 
 
@@ -32,6 +38,8 @@ export default {
     async execute(interaction) {
         const siteKey = interaction.options.getString("website");
         const chapterLink = interaction.options.getString("chapter_link");
+        const chapterName = interaction.options.getString("chapter_name");
+
 
         await interaction.reply(`**Fetching img URLs => ${siteKey}**`);
 
@@ -45,9 +53,9 @@ export default {
             await interaction.editReply(`Found ${imageUrls.length} IMGs \n the process may take more than 5 minutes if some unexpected issues occur, but the chapter will reach you.`);
 
 
-            const driveLink = await processChapter(imageUrls);
+            const driveLink = await processChapter(imageUrls, chapterName);
 
-            await interaction.editReply(`Chapter Link : \n ${driveLink}`);
+            await interaction.editReply(`Chapter \`${chapterName}\` Link : \n ${driveLink}`);
 
         } catch (err) {
             console.error(err);

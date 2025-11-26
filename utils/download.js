@@ -1,12 +1,12 @@
 import axios from "axios";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto"
 
 
 
-
-export async function downloadImages(imageUrls) {
-    const folderName = `chapter_${Date.now()}`;
+export async function downloadImages(imageUrls, chName) {
+    const folderName = `${chName}_${randomKey()}`;
     const folderPath = path.join("temp", folderName);
 
     if (!fs.existsSync("temp")) fs.mkdirSync("temp");
@@ -29,4 +29,11 @@ export async function downloadImages(imageUrls) {
     }
 
     return folderPath;
+}
+
+
+
+
+function randomKey(length = 6){
+    return crypto.randomBytes(3).toString("hex").substring(0, length)
 }

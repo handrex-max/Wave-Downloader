@@ -13,5 +13,15 @@ export const SUPPORTED_SITES = {
         key: "asura",
         name: "Asura Scan",
         domain: "https://asuracomic.net"
+    },
+    flame: {
+        key: "flame",
+        name: "Flame Comics",
+        domain: "https://flamecomics.xyz"
+    },
+    mgeko: {
+        key: "mgeko",
+        name: "Manga Geko",
+        domain: "https://www.mgeko.cc"
     }
 }
