@@ -23,5 +23,15 @@ export const SUPPORTED_SITES = {
         key: "mgeko",
         name: "Manga Geko",
         domain: "https://www.mgeko.cc"
-    }
+    },
+    madara: {
+        key: "madara",
+        name: "Madara Scans",
+        domain: "https://madarascans.com"
+    },
+    thunder: {
+        key: "thunder",
+        name: "Thunder Scans",
+        domain: "https://en-thunderscans.com"
+    },
 }
