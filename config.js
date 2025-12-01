@@ -34,9 +34,4 @@ export const SUPPORTED_SITES = {
         name: "Thunder Scans",
         domain: "https://en-thunderscans.com"
     },
-    happymh: {
-        key: "happymh",
-        name: "Happy Manhua",
-        domain: "https://m.happymh.com/"
-    }
 }
