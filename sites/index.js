@@ -8,6 +8,7 @@ import { getMGekoImg } from "./scrapper/mgeko.js";
 import { getMadaraImg } from "./scrapper/madara.js";
 import { getThunderImg } from "./scrapper/thunder.js";
 import { getTWMangaImg } from "./scrapper/twmanga.js";
+import { getKingOfShojoImg } from "./scrapper/kingshoujo.js";
 
 
 

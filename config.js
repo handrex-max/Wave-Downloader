@@ -34,6 +34,11 @@ export const SUPPORTED_SITES = {
         name: "Thunder Scans",
         domain: "https://en-thunderscans.com"
     },
+    kingofshojo: {
+        key: "kngshoujo",
+        name: "King Of Shoujo",
+        domain: "https://kingofshojo.com"
+    },
     twmanga: {
         key: "twmanga",
         name: "TWManga",
