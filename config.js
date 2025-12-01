@@ -34,4 +34,9 @@ export const SUPPORTED_SITES = {
         name: "Thunder Scans",
         domain: "https://en-thunderscans.com"
     },
+    twmanga: {
+        key: "twmanga",
+        name: "TWManga",
+        domain: "https://www.twmanga.com"
+    },
 }
